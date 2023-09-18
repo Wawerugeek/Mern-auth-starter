@@ -56,7 +56,11 @@ const registerUser = expressAsyncHandler(async (req, res) => {
 // logout uuser
 // route POST /api/users/logout
 const logout = expressAsyncHandler(async (req, res) => {
-  res.status(200).json({ message: "logout" });
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0)
+  })
+  res.status(200).json({message: 'user logged out'})
 });
 
 // get user profile
