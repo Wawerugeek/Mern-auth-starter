@@ -1,12 +1,25 @@
 import expressAsyncHandler from "express-async-handler";
+import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
 // authenticate the user/set token
 // route POST /api/users/auth
 // access Public
 const authUser = expressAsyncHandler(async (req, res) => {
-  res.status(401);
-  throw new Error("something went wrong");
-  res.status(200).json({ message: "Authenticate the user" });
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email })
+
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id);
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(401);
+    throw new Error("Invalid password or email");
+  }
 });
 
 // register user
@@ -28,6 +41,7 @@ const registerUser = expressAsyncHandler(async (req, res) => {
   });
 
   if (user) {
+    generateToken(res, user._id);
     res.status(200).json({
       _id: user._id,
       name: user.name,
