@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
-
+import cookieParser from "cookie-parser";
 import { notfound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 const port = process.env.PORT || 5000;
@@ -14,6 +14,8 @@ const App = express();
 
 App.use(express.json());
 App.use(express.urlencoded({ extended: true }));
+
+App.use(cookieParser());
 
 App.use("/api/users", userRoutes);
 
