@@ -4,6 +4,8 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import { notfound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
+import path from "path";
+
 const port = process.env.PORT || 5000;
 
 import userRoutes from "./routes/userRoutes.js";
@@ -19,7 +21,16 @@ App.use(cookieParser());
 
 App.use("/api/users", userRoutes);
 
-App.get("/", (req, res) => res.send("server iko chonjo"));
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  App.use(express.static(path.join(__dirname, "frontend/dist")));
+
+  App.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+  );
+} else {
+  App.get("/", (req, res) => res.send("server iko chonjo"));
+}
 
 App.use(notfound);
 App.use(errorHandler);
