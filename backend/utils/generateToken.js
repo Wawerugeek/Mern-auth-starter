@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const secret = "Aqe1234"
 
 const generateToken = (res, userId) => {
-  const token = jwt.sign({ userId }, secret, {
+  const token = jwt.sign({ userId }, process.env.JWT_, {
     expiresIn: "30d",
   });
   res.cookie("jwt", token, {
