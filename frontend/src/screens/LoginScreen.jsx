@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import FormContainer from "../components/FormContainer";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlices";
+import { toast } from 'react-toastify';
+import Loader from "../components/Loader";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -13,24 +15,24 @@ const LoginScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [login, {isLoading}] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (userInfo) {
-      navigate('/');
+      navigate("/");
     }
-  }, [navigate, userInfo])
+  }, [navigate, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await login({ email, password}).unwrap();
-      dispatch(setCredentials(...res))
-      navigate('/')
-    }catch (err) {
-        console.log(err?.data?.message || err.error);
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({...res}));
+      navigate("/");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
 
@@ -56,6 +58,8 @@ const LoginScreen = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
+
+        { isLoading && <Loader /> }
 
         <Button type="submit" variant="primary" className="mt-3">
           Sign In
